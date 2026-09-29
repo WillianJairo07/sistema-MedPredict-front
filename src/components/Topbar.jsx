@@ -103,7 +103,7 @@ export default function Topbar({ toggleSidebar }) {
             <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl py-1 z-50">
               <div className="px-4 py-2 border-b border-slate-100">
                 <p className="text-xs text-slate-500">Conectado como</p>
-                <p className="text-sm font-semibold text-slate-800 truncate">admin@drogia.com</p>
+                <p className="text-sm font-semibold text-slate-800 truncate">admin@medpredict.com</p>
               </div>
               <button 
                 onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}
