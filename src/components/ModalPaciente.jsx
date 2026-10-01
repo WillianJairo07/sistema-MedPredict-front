@@ -11,7 +11,7 @@ export default function ModalPaciente({ isOpen, onClose, formData, onChange, onS
             <h2 className="text-xl font-bold text-slate-800">
               {esEdicion ? 'Editar Paciente' : 'Registrar Nuevo Paciente'}
             </h2>
-            <p className="text-xs text-slate-500">Ingresa los datos personales y signos vitales iniciales para la admisión.</p>
+            <p className="text-xs text-slate-500">Ingresa los datos personales y de contacto para el registro general.</p>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">
             ✕
@@ -51,7 +51,11 @@ export default function ModalPaciente({ isOpen, onClose, formData, onChange, onS
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Fecha de Nacimiento</label>
+              <input type="date" name="fechaNacimiento" required value={formData.fechaNacimiento || ''} onChange={onChange} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
+            </div>
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Teléfono / Celular</label>
               <input type="text" name="telefono" value={formData.telefono} onChange={onChange} placeholder="987654321" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
@@ -59,28 +63,6 @@ export default function ModalPaciente({ isOpen, onClose, formData, onChange, onS
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Dirección</label>
               <input type="text" name="direccion" value={formData.direccion} onChange={onChange} placeholder="Av. Arequipa 123" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
-            </div>
-          </div>
-
-          <div className="border-t pt-4 mt-2">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Signos Vitales Iniciales (Triaje)</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <label className="block text-[11px] font-medium text-slate-600 mb-1">Peso (kg)</label>
-                <input type="number" name="peso" value={formData.peso} onChange={onChange} placeholder="70" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium text-slate-600 mb-1">Altura (cm)</label>
-                <input type="number" name="altura" value={formData.altura} onChange={onChange} placeholder="170" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium text-slate-600 mb-1">Presión (mmHg)</label>
-                <input type="text" name="presionArterial" value={formData.presionArterial} onChange={onChange} placeholder="120/80" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium text-slate-600 mb-1">Temperatura (°C)</label>
-                <input type="number" step="0.1" name="temperatura" value={formData.temperatura} onChange={onChange} placeholder="36.5" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
-              </div>
             </div>
           </div>
 

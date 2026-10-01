@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Search, Plus, FileText, Edit } from 'lucide-react';
-import Tabla from '../components/Tabla'; // <--- Importamos nuestra tabla dinámica general
+import { useNavigate } from 'react-router-dom';
+import Tabla from '../components/Tabla';
 import ModalPaciente from '../components/ModalPaciente';
 
 export default function PacientesPage() {
+  const navigate = useNavigate();
   const [pacientes, setPacientes] = useState([
-    { id: 1, dni: '72345634', nombres: 'Juan', apellidos: 'Perez', edad: 45, genero: 'Masculino', telefono: '987654321', estadoTriaje: 'Pendiente', peso: '70', altura: '170', presionArterial: '120/80', temperatura: '36.5' },
-    { id: 2, dni: '45789612', nombres: 'Carlos', apellidos: 'Mendoza', edad: 42, genero: 'Masculino', telefono: '912345678', estadoTriaje: 'Atendido', peso: '75', altura: '175', presionArterial: '130/85', temperatura: '36.8' },
+    { id: 1, dni: '72345634', nombres: 'Juan', apellidos: 'Perez', fechaNacimiento: '1981-05-15', genero: 'Masculino', telefono: '987654321', direccion: 'Av. Arequipa 123', estadoTriaje: 'Pendiente' },
+    { id: 2, dni: '45789612', nombres: 'Carlos', apellidos: 'Mendoza', fechaNacimiento: '1984-08-20', genero: 'Masculino', telefono: '912345678', direccion: 'Calle Lima 456', estadoTriaje: 'Atendido' },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,20 +17,30 @@ export default function PacientesPage() {
 
   const [formData, setFormData] = useState({
     nombres: '', apellidos: '', tipoDoc: 'DNI', dni: '', 
-    genero: 'Masculino', telefono: '', direccion: '', 
-    peso: '', altura: '', presionArterial: '', temperatura: ''
+    genero: 'Masculino', fechaNacimiento: '', telefono: '', direccion: ''
   });
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const calcularEdad = (fechaNacimiento) => {
+    if (!fechaNacimiento) return 0;
+    const hoy = new Date();
+    const cumpleanos = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - cumpleanos.getFullYear();
+    const m = hoy.getMonth() - cumpleanos.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
+      edad--;
+    }
+    return edad;
+  };
+
   const abrirModalNuevo = () => {
     setPacienteEditando(null);
     setFormData({
       nombres: '', apellidos: '', tipoDoc: 'DNI', dni: '', 
-      genero: 'Masculino', telefono: '', direccion: '', 
-      peso: '', altura: '', presionArterial: '', temperatura: ''
+      genero: 'Masculino', fechaNacimiento: '', telefono: '', direccion: ''
     });
     setIsModalOpen(true);
   };
@@ -41,12 +53,9 @@ export default function PacientesPage() {
       tipoDoc: 'DNI',
       dni: paciente.dni,
       genero: paciente.genero,
+      fechaNacimiento: paciente.fechaNacimiento || '',
       telefono: paciente.telefono,
-      direccion: paciente.direccion || '',
-      peso: paciente.peso || '',
-      altura: paciente.altura || '',
-      presionArterial: paciente.presionArterial || '',
-      temperatura: paciente.temperatura || ''
+      direccion: paciente.direccion || ''
     });
     setIsModalOpen(true);
   };
@@ -59,7 +68,6 @@ export default function PacientesPage() {
       const nuevo = {
         id: pacientes.length + 1,
         ...formData,
-        edad: 30,
         estadoTriaje: 'Pendiente'
       };
       setPacientes([nuevo, ...pacientes]);
@@ -73,12 +81,14 @@ export default function PacientesPage() {
     p.apellidos.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // Definimos las columnas específicas para esta vista de Pacientes
   const columnasPacientes = [
     { titulo: 'DNI / Historia', campo: 'dni', render: (row) => <span className="font-semibold text-slate-700">{row.dni}</span> },
     { titulo: 'Nombres', campo: 'nombres', render: (row) => <span className="font-medium text-slate-900">{row.nombres}</span> },
     { titulo: 'Apellidos', campo: 'apellidos', render: (row) => <span className="font-medium text-slate-900">{row.apellidos}</span> },
-    { titulo: 'Edad', campo: 'edad', render: (row) => <span className="text-slate-600">{row.edad} años</span> },
+    { 
+      titulo: 'Edad', 
+      render: (row) => <span className="text-slate-600">{calcularEdad(row.fechaNacimiento)} años</span> 
+    },
     { titulo: 'Género', campo: 'genero', render: (row) => <span className="text-slate-600">{row.genero}</span> },
     { titulo: 'Teléfono', campo: 'telefono', render: (row) => <span className="text-slate-600">{row.telefono}</span> },
     { 
@@ -96,8 +106,9 @@ export default function PacientesPage() {
       align: 'center',
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
+          {/* AQUÍ ESTABA EL CAMBIO CLAVE: Usamos navigate para enviar el objeto row al historial */}
           <button 
-            onClick={() => alert(`Ver historial clínico de: ${row.nombres} ${row.apellidos}`)} 
+            onClick={() => navigate('/dashboard/historial', { state: { paciente: row } })} 
             title="Ver Historial" 
             className="p-1.5 bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-100 transition cursor-pointer inline-flex items-center justify-center"
           >
@@ -120,7 +131,7 @@ export default function PacientesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-xs border border-slate-100">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Gestión de Pacientes</h1>
-          <p className="text-sm text-slate-500 mt-1">Administra el registro, datos personales e ingresos al área de triaje.</p>
+          <p className="text-sm text-slate-500 mt-1">Directorio y registro general de datos personales de pacientes.</p>
         </div>
         <button 
           onClick={abrirModalNuevo}
@@ -144,7 +155,6 @@ export default function PacientesPage() {
         </div>
       </div>
 
-      {/* Usamos el componente unificado Tabla dinámicamente */}
       <Tabla 
         columnas={columnasPacientes}
         datos={pacientesFiltrados}
