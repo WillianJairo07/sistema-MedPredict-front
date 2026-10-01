@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AlignLeft, Bell, ChevronDown, LogOut, Clock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Topbar({ toggleSidebar }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth(); 
 
   // Reloj en tiempo real para un toque profesional
   useEffect(() => {
@@ -19,27 +22,23 @@ export default function Topbar({ toggleSidebar }) {
     return () => clearInterval(timer);
   }, []);
 
+  // Títulos adaptados a las rutas reales de MedPredict
   const pageTitles = {
     '/dashboard': 'Panel Principal',
-    '/dashboard/categorias': 'Gestión de Categorías',
-    '/dashboard/productos': 'Gestión de Productos',
-    '/dashboard/inventario': 'Inventario General',
-    '/dashboard/lotes': 'Gestión de Lotes',
-    '/dashboard/proveedores': 'Proveedores',
-    '/dashboard/compras': 'Registro de Compras',
-    '/dashboard/historial-compras': 'Historial de Compras',
-    '/dashboard/clientes': 'Clientes',
-    '/dashboard/ventas': 'Punto de Venta (Ventas)',
-    '/dashboard/historial-ventas': 'Historial de Ventas',
+    '/dashboard/pacientes': 'Gestión de Pacientes',
+    '/dashboard/triaje': 'Triaje y Signos Vitales',
+    '/dashboard/historial': 'Historial Clínico',
+    '/dashboard/predictivo': 'Análisis Predictivo (IA)',
+    '/dashboard/reportes': 'Reportes y Analítica',
     '/dashboard/usuarios': 'Control de Usuarios',
   };
 
-  const currentTitle = pageTitles[location.pathname] || 'Panel Administrativo';
+  const currentTitle = pageTitles[location.pathname] || 'Panel Médico';
 
   return (
     <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-xs z-30">
       <div className="flex items-center gap-4">
-        {/* Botón del menú lateral con el icono AlignLeft de líneas escalonadas */}
+        {/* Botón del menú lateral */}
         <button 
           onClick={toggleSidebar} 
           className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer flex items-center gap-2"
@@ -79,23 +78,29 @@ export default function Topbar({ toggleSidebar }) {
             <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50">
               <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
                 <p className="text-sm font-semibold text-slate-800">Notificaciones</p>
-                <span className="text-xs bg-sky-100 text-sky-700 font-medium px-2 py-0.5 rounded-full">2 nuevas</span>
+                <span className="text-xs bg-sky-100 text-sky-700 font-medium px-2 py-0.5 rounded-full">1 nueva</span>
               </div>
               <div className="max-h-64 overflow-y-auto">
                 <div className="px-4 py-3 hover:bg-slate-50 border-b border-slate-50 cursor-pointer">
-                  <p className="text-xs font-semibold text-slate-800">Stock mínimo alcanzado</p>
-                  <p className="text-xs text-slate-500 mt-0.5">El producto Paracetamol 500mg está por agotarse.</p>
+                  <p className="text-xs font-semibold text-slate-800">Alerta de Triaje</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Nuevo paciente registrado requiere evaluación.</p>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Perfil de Usuario */}
+        {/* Perfil de Usuario Dinámico */}
         <div className="relative">
           <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center gap-3 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors cursor-pointer border border-slate-200">
-            <span className="text-sm font-medium text-slate-700">Administrador</span>
-            <div className="w-8 h-8 rounded-full bg-[#17324c] text-white flex items-center justify-center font-semibold text-sm">A</div>
+            {/* Muestra el rol con la primera letra en mayúscula */}
+            <span className="text-sm font-medium text-slate-700 capitalize">
+              {user?.role || 'Usuario'}
+            </span>
+            {/* Avatar con la inicial del nombre o rol */}
+            <div className="w-8 h-8 rounded-full bg-[#17324c] text-white flex items-center justify-center font-semibold text-sm uppercase">
+              {user?.name ? user.name.charAt(0) : 'U'}
+            </div>
             <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
@@ -103,10 +108,15 @@ export default function Topbar({ toggleSidebar }) {
             <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl py-1 z-50">
               <div className="px-4 py-2 border-b border-slate-100">
                 <p className="text-xs text-slate-500">Conectado como</p>
-                <p className="text-sm font-semibold text-slate-800 truncate">admin@medpredict.com</p>
+                <p className="text-sm font-semibold text-slate-800 truncate">
+                  {user?.name ? `${user.name}@medpredict.com` : 'usuario@medpredict.com'}
+                </p>
               </div>
               <button 
-                onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }}
                 className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />

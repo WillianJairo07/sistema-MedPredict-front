@@ -2,19 +2,37 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock } from 'lucide-react';
 import logoImage from '../assets/logo.png';
+import { useAuth } from '../context/AuthContext'; 
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth(); 
 
   const handleLogin = (e) => {
     e.preventDefault();
+
+    // Ejemplo simulado de roles según el usuario ingresado
+    let assignedRole = '';
     if (username === 'admin' && password === '123456') {
-      localStorage.setItem('token', 'fake-jwt-token-12345');
+      assignedRole = 'administrador';
+    } else if (username === 'medico' && password === '123456') {
+      assignedRole = 'medico';
+    } else if (username === 'enfermero' && password === '123456') {
+      assignedRole = 'enfermero';
+    }
+
+    if (assignedRole) {
+      // Guardamos tanto el token como el rol utilizando el AuthContext
+      login({
+        token: 'fake-jwt-token-12345',
+        name: username,
+        role: assignedRole,
+      });
       navigate('/dashboard');
     } else {
-      alert('Credenciales incorrectas');
+      alert('Credenciales incorrectas. Pruebe con admin/123456, medico/123456 o enfermero/123456');
     }
   };
 
@@ -63,7 +81,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Espaciador inferior estético para que el botón no quede al ras */}
           <div className="mb-2"></div>
         </div>
 

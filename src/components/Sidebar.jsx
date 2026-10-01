@@ -11,12 +11,15 @@ import {
   LogOut 
 } from 'lucide-react';
 import logoImage from '../assets/logo.png';
+import { useAuth } from '../context/AuthContext';       // <--- 1. Importas el hook de autenticación
+import { PERMISSIONS } from '../config/roles';          // <--- 2. Importas tus permisos centralizados
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();                   // <--- 3. Obtienes el usuario y la función logout del context
 
-  // Módulos actualizados para MedPredict
+  // Módulos completos de MedPredict
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { id: 'pacientes', label: 'Pacientes', path: '/dashboard/pacientes', icon: Users },
@@ -27,6 +30,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
     { id: 'usuarios', label: 'Gestión de Usuarios', path: '/dashboard/usuarios', icon: ShieldCheck },
   ];
 
+  // 4. Filtrar dinámicamente los elementos según el rol del usuario actual
+  const filteredMenuItems = menuItems.filter((item) => {
+    const allowedRoles = PERMISSIONS[item.path];
+    // Si la ruta no requiere un rol específico o el usuario tiene permiso, se muestra
+    return allowedRoles && user && allowedRoles.includes(user.role);
+  });
+
   return (
     <aside className={`absolute inset-y-0 left-0 z-50 bg-[#56ccf2] flex flex-col transition-all duration-300 ease-in-out lg:relative overflow-hidden ${sidebarOpen ? 'w-64 shadow-xl lg:shadow-none' : 'w-0 -translate-x-full lg:translate-x-0'}`}>
       <div className="w-64 flex flex-col h-full">
@@ -35,7 +45,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1.5 custom-scrollbar">
-          {menuItems.map((item) => {
+          {/* 5. Iteramos sobre los elementos filtrados en lugar del array completo */}
+          {filteredMenuItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = location.pathname === item.path;
             return (
@@ -59,8 +70,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         <div className="p-3 border-t border-sky-400/60 shrink-0">
           <button 
             onClick={() => {
-              localStorage.removeItem('token');
-              window.location.href = '/login';
+              logout();                 // <--- 6. Usamos el logout del contexto para limpiar estado y storage limpiamente
+              navigate('/login');       // <--- 7. Redirigimos usando navigate de react-router-dom
             }}
             className="flex items-center gap-3.5 w-full px-4 py-3 rounded-lg text-sm font-medium text-red-700 hover:bg-red-500/10 transition-colors cursor-pointer whitespace-nowrap"
           >
