@@ -8,29 +8,30 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardPage from '../pages/DashboardPage';
 import PacientesPage from '../pages/PacientesPage';
 import TriajePage from '../pages/TriajePage';
-import PredictivoPage from "../pages/EvaluacionPage"; 
-import HistorialPage from '../pages/HistorialPage';
+import HistoriasClinicasPage from '../pages/HistoriasClinicasPage'; 
+import ConsultorioPage from '../pages/ConsultorioPage';             
+import AtencionesPage from '../pages/AtencionesPage';             
+import UsuariosPage from '../pages/UsuariosPage';                 
 
 export default function AppRouter() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Ruta pública */}
           <Route path="/login" element={<LoginPage />} />
           
-          {/* Rutas Protegidas del Dashboard con Layout Anidado */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardPage />} />
               <Route path="pacientes" element={<PacientesPage />} />
               <Route path="triaje" element={<TriajePage />} />
-              <Route path="historial" element={<HistorialPage />} />
-              <Route path="predictivo" element={<PredictivoPage />} />
+              <Route path="historiales" element={<HistoriasClinicasPage />} />
+              <Route path="consultorio" element={<ConsultorioPage />} />
+              <Route path="atenciones" element={<AtencionesPage />} />
+              <Route path="usuarios" element={<UsuariosPage />} />
             </Route>
           </Route>
 
-          {/* Redirección por defecto */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

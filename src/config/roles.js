@@ -6,13 +6,13 @@ export const ROLES = {
   ENFERMERO: 'enfermero',
 };
 
-// Mapeo de rutas con los roles que tienen permitido el acceso
+// Matriz de permisos por ruta y rol
 export const PERMISSIONS = {
   '/dashboard': [ROLES.ADMIN, ROLES.MEDICO, ROLES.ENFERMERO],
   '/dashboard/pacientes': [ROLES.ADMIN, ROLES.MEDICO, ROLES.ENFERMERO],
-  '/dashboard/triaje': [ROLES.ADMIN, ROLES.ENFERMERO],           // Típicamente enfermería o admin
-  '/dashboard/historial': [ROLES.ADMIN, ROLES.MEDICO],          // Médicos y admin
-  '/dashboard/predictivo': [ROLES.ADMIN, ROLES.MEDICO],         // Análisis con IA enfocado a personal médico
-  '/dashboard/reportes': [ROLES.ADMIN],                         // Solo administrador
-  '/dashboard/usuarios': [ROLES.ADMIN],                         // Solo administrador
+  '/dashboard/triaje': [ROLES.ADMIN, ROLES.ENFERMERO],           // Típicamente enfermería y admin
+  '/dashboard/historiales': [ROLES.ADMIN, ROLES.MEDICO],         // Historias clínicas (médicos y admin)
+  '/dashboard/consultorio': [ROLES.ADMIN, ROLES.MEDICO],         // Consultorio / atención médica
+  '/dashboard/atenciones': [ROLES.ADMIN, ROLES.MEDICO, ROLES.ENFERMERO], // Historial de atenciones generales
+  '/dashboard/usuarios': [ROLES.ADMIN],                         // Gestión de usuarios (solo administrador)
 };

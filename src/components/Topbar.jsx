@@ -27,9 +27,9 @@ export default function Topbar({ toggleSidebar }) {
     '/dashboard': 'Panel Principal',
     '/dashboard/pacientes': 'Gestión de Pacientes',
     '/dashboard/triaje': 'Triaje y Signos Vitales',
-    '/dashboard/historial': 'Historial Clínico',
-    '/dashboard/predictivo': 'Análisis Predictivo (IA)',
-    '/dashboard/reportes': 'Reportes y Analítica',
+    '/dashboard/historiales': 'Historias Clínicas',
+    '/dashboard/consultorio': 'Consultorio Médico',
+    '/dashboard/atenciones': 'Historial de Atenciones',
     '/dashboard/usuarios': 'Control de Usuarios',
   };
 

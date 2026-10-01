@@ -5,35 +5,33 @@ import {
   Users, 
   Activity, 
   FileText, 
-  Cpu, 
-  BarChart3, 
+  Stethoscope, 
+  History, 
   ShieldCheck, 
   LogOut 
 } from 'lucide-react';
 import logoImage from '../assets/logo.png';
-import { useAuth } from '../context/AuthContext';       // <--- 1. Importas el hook de autenticación
-import { PERMISSIONS } from '../config/roles';          // <--- 2. Importas tus permisos centralizados
+import { useAuth } from '../context/AuthContext';
+import { PERMISSIONS } from '../config/roles';
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();                   // <--- 3. Obtienes el usuario y la función logout del context
+  const { user, logout } = useAuth();
 
-  // Módulos completos de MedPredict
+  // Módulos exactos solicitados para MedPredict
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { id: 'pacientes', label: 'Pacientes', path: '/dashboard/pacientes', icon: Users },
-    { id: 'triaje', label: 'Triaje y Signos Vitales', path: '/dashboard/triaje', icon: Activity },
-    { id: 'historial', label: 'Historial Clínico', path: '/dashboard/historial', icon: FileText },
-    { id: 'predictivo', label: 'Análisis Predictivo (IA)', path: '/dashboard/predictivo', icon: Cpu },
-    { id: 'reportes', label: 'Reportes y Analítica', path: '/dashboard/reportes', icon: BarChart3 },
+    { id: 'triaje', label: 'Triaje', path: '/dashboard/triaje', icon: Activity },
+    { id: 'historiales', label: 'Historias Clínicas', path: '/dashboard/historiales', icon: FileText },
+    { id: 'consultorio', label: 'Consultorio', path: '/dashboard/consultorio', icon: Stethoscope },
+    { id: 'atenciones', label: 'Historial de Atenciones', path: '/dashboard/atenciones', icon: History },
     { id: 'usuarios', label: 'Gestión de Usuarios', path: '/dashboard/usuarios', icon: ShieldCheck },
   ];
 
-  // 4. Filtrar dinámicamente los elementos según el rol del usuario actual
   const filteredMenuItems = menuItems.filter((item) => {
     const allowedRoles = PERMISSIONS[item.path];
-    // Si la ruta no requiere un rol específico o el usuario tiene permiso, se muestra
     return allowedRoles && user && allowedRoles.includes(user.role);
   });
 
@@ -45,7 +43,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1.5 custom-scrollbar">
-          {/* 5. Iteramos sobre los elementos filtrados en lugar del array completo */}
           {filteredMenuItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = location.pathname === item.path;
@@ -70,8 +67,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         <div className="p-3 border-t border-sky-400/60 shrink-0">
           <button 
             onClick={() => {
-              logout();                 // <--- 6. Usamos el logout del contexto para limpiar estado y storage limpiamente
-              navigate('/login');       // <--- 7. Redirigimos usando navigate de react-router-dom
+              logout();
+              navigate('/login');
             }}
             className="flex items-center gap-3.5 w-full px-4 py-3 rounded-lg text-sm font-medium text-red-700 hover:bg-red-500/10 transition-colors cursor-pointer whitespace-nowrap"
           >

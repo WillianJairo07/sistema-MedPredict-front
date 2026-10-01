@@ -3,13 +3,13 @@ import { Search, Plus, FileText, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Tabla from '../components/Tabla';
 import ModalPaciente from '../components/ModalPaciente';
+import { usePacientes } from '../context/PacientesContext'; // <-- 1. Importamos el hook global
 
 export default function PacientesPage() {
   const navigate = useNavigate();
-  const [pacientes, setPacientes] = useState([
-    { id: 1, dni: '72345634', nombres: 'Juan', apellidos: 'Perez', fechaNacimiento: '1981-05-15', genero: 'Masculino', telefono: '987654321', direccion: 'Av. Arequipa 123', estadoTriaje: 'Pendiente' },
-    { id: 2, dni: '45789612', nombres: 'Carlos', apellidos: 'Mendoza', fechaNacimiento: '1984-08-20', genero: 'Masculino', telefono: '912345678', direccion: 'Calle Lima 456', estadoTriaje: 'Atendido' },
-  ]);
+  
+  // 2. Extraemos los pacientes y las funciones globales del contexto
+  const { pacientes, agregarPaciente, actualizarPaciente } = usePacientes();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [busqueda, setBusqueda] = useState('');
@@ -63,14 +63,31 @@ export default function PacientesPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (pacienteEditando) {
-      setPacientes(pacientes.map(p => p.id === pacienteEditando.id ? { ...p, ...formData } : p));
+      // 3. Actualizamos usando la función global
+      actualizarPaciente(pacienteEditando.id, formData);
     } else {
+      // 4. Creamos un nuevo paciente con valores base para el triaje y consultorio
       const nuevo = {
         id: pacientes.length + 1,
         ...formData,
-        estadoTriaje: 'Pendiente'
+        estadoTriaje: 'Pendiente',
+        peso: '',
+        altura: '',
+        presionArterial: '',
+        temperatura: '',
+        frecuenciaCardiaca: '',
+        saturacion: '',
+        imc: '',
+        prioridad: null,
+        colorPrioridad: null,
+        sintomasActuales: '',
+        prediccionIA: null,
+        diagnosticoMedico: '',
+        tratamiento: '',
+        receta: '',
+        fechaAtencion: null
       };
-      setPacientes([nuevo, ...pacientes]);
+      agregarPaciente(nuevo);
     }
     setIsModalOpen(false);
   };
@@ -106,7 +123,6 @@ export default function PacientesPage() {
       align: 'center',
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
-          {/* AQUÍ ESTABA EL CAMBIO CLAVE: Usamos navigate para enviar el objeto row al historial */}
           <button 
             onClick={() => navigate('/dashboard/historial', { state: { paciente: row } })} 
             title="Ver Historial" 

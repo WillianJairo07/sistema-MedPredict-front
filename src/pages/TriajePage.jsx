@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import { Search, Activity, CheckCircle, Clock } from 'lucide-react';
 import Tabla from '../components/Tabla';
+import { usePacientes } from '../context/PacientesContext'; // <-- Importamos el contexto global
 
 export default function TriajePage() {
-  const [colaTriaje, setColaTriaje] = useState([
-    { id: 1, dni: '72345634', nombres: 'Juan', apellidos: 'Perez', edad: 45, genero: 'Masculino', estadoTriaje: 'Pendiente' },
-    { id: 2, dni: '45789612', nombres: 'Carlos', apellidos: 'Mendoza', edad: 42, genero: 'Masculino', estadoTriaje: 'Atendido' },
-  ]);
+  // Extraemos la lista de pacientes y la función global para actualizar el triaje
+  const { pacientes: colaTriaje, actualizarTriaje } = usePacientes();
 
   const [busqueda, setBusqueda] = useState('');
   const [isModalTriajeOpen, setIsModalTriajeOpen] = useState(false);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
 
-  // Ya no incluimos 'prioridad' en el formulario manual porque se calculará solo
+  // Estados ampliados para incluir signos vitales óptimos para la IA
   const [signosVitales, setSignosVitales] = useState({
     peso: '',
     altura: '',
     presionArterial: '',
-    temperatura: ''
+    temperatura: '',
+    frecuenciaCardiaca: '',
+    saturacion: ''
   });
 
   const handleInputChange = (e) => {
@@ -26,32 +27,53 @@ export default function TriajePage() {
 
   const abrirModalTriaje = (paciente) => {
     setPacienteSeleccionado(paciente);
-    setSignosVitales({ peso: '', altura: '', presionArterial: '', temperatura: '' });
+    setSignosVitales({ 
+      peso: '', 
+      altura: '', 
+      presionArterial: '', 
+      temperatura: '',
+      frecuenciaCardiaca: '',
+      saturacion: '' 
+    });
     setIsModalTriajeOpen(true);
   };
 
+  // Función para calcular el IMC automáticamente en base a peso (kg) y altura (cm)
+  const calcularIMC = (peso, altura) => {
+    const p = parseFloat(peso);
+    const a = parseFloat(altura) / 100; // convertir cm a metros
+    if (!p || !a || a <= 0) return 'N/A';
+    const imc = p / (a * a);
+    return imc.toFixed(1);
+  };
+
   // Función para calcular automáticamente la prioridad/riesgo según los signos vitales
-  const calcularPrioridadAutomatica = (temp, presion) => {
+  const calcularPrioridadAutomatica = (temp, fc) => {
     const temperatura = parseFloat(temp) || 0;
-    // Ejemplo de reglas clínicas automáticas
-    if (temperatura > 38.5) return { nivel: 'Alto (Urgencia)', color: 'bg-rose-100 text-rose-800' };
-    if (temperatura > 37.5) return { nivel: 'Moderado (Urgencia Menor)', color: 'bg-amber-100 text-amber-800' };
+    const frecuencia = parseFloat(fc) || 0;
+
+    if (temperatura > 38.5 || frecuencia > 110) {
+      return { nivel: 'Alto (Urgencia)', color: 'bg-rose-100 text-rose-800' };
+    }
+    if (temperatura > 37.5 || frecuencia > 90) {
+      return { nivel: 'Moderado (Urgencia Menor)', color: 'bg-amber-100 text-amber-800' };
+    }
     return { nivel: 'Bajo (No Urgente)', color: 'bg-emerald-100 text-emerald-800' };
   };
 
   const guardarTriaje = (e) => {
     e.preventDefault();
     
-    // Calculamos la prioridad de forma automática al guardar
-    const prioridadCalculada = calcularPrioridadAutomatica(signosVitales.temperatura, signosVitales.presionArterial);
+    const imcCalculado = calcularIMC(signosVitales.peso, signosVitales.altura);
+    const prioridadCalculada = calcularPrioridadAutomatica(signosVitales.temperatura, signosVitales.frecuenciaCardiaca);
 
-    setColaTriaje(colaTriaje.map(p => p.id === pacienteSeleccionado.id ? { 
-      ...p, 
-      estadoTriaje: 'Atendido', 
+    // Actualizamos el estado de manera global usando la función del contexto
+    actualizarTriaje(pacienteSeleccionado.id, {
       ...signosVitales,
+      imc: imcCalculado,
       prioridad: prioridadCalculada.nivel,
       colorPrioridad: prioridadCalculada.color
-    } : p));
+    });
 
     setIsModalTriajeOpen(false);
   };
@@ -109,7 +131,7 @@ export default function TriajePage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       <div className="bg-white p-6 rounded-2xl shadow-xs border border-slate-100">
         <h1 className="text-2xl font-bold text-slate-800">Estación de Triaje</h1>
-        <p className="text-sm text-slate-500 mt-1">Registro de signos vitales y priorización automática de pacientes.</p>
+        <p className="text-sm text-slate-500 mt-1">Registro de signos vitales y priorización automática para el modelo de IA.</p>
       </div>
 
       <div className="bg-white p-4 rounded-2xl shadow-xs border border-slate-100 flex items-center gap-4">
@@ -131,7 +153,7 @@ export default function TriajePage() {
         mensajeVacio="No hay pacientes en cola de triaje."
       />
 
-      {/* Modal limpio sin selector manual de prioridad */}
+      {/* Modal organizado en dos columnas para mayor limpieza visual */}
       {isModalTriajeOpen && pacienteSeleccionado && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 lg:p-8 max-w-xl w-full shadow-2xl border border-slate-100">
@@ -158,6 +180,17 @@ export default function TriajePage() {
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Temperatura (°C)</label>
                   <input type="number" step="0.1" name="temperatura" required value={signosVitales.temperatura} onChange={handleInputChange} placeholder="36.5" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Frecuencia Cardíaca (bpm)</label>
+                  <input type="number" name="frecuenciaCardiaca" required value={signosVitales.frecuenciaCardiaca} onChange={handleInputChange} placeholder="80" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Saturación de Oxígeno (%)</label>
+                  <input type="number" name="saturacion" required value={signosVitales.saturacion} onChange={handleInputChange} placeholder="98" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none" />
                 </div>
               </div>
 
