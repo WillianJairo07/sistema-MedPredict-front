@@ -3,9 +3,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardPage from '../pages/DashboardPage';
-import CategoriasPage from '../pages/CategoriasPage';
-import ProductosPage from '../pages/ProductosPage';
+import PacientesPage from '../pages/PacientesPage';
 // Importa aquí las demás páginas conforme las vayas creando
+import TriajePage from '../pages/TriajePage';
+// import HistorialPage from '../pages/HistorialPage';
+// import PredictivoPage from '../pages/PredictivoPage';
+// import ReportesPage from '../pages/ReportesPage';
+// import UsuariosPage from '../pages/UsuariosPage';
 
 export default function AppRouter() {
   return (
@@ -16,9 +20,13 @@ export default function AppRouter() {
         {/* Rutas Protegidas del Dashboard con Layout Anidado */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardPage />} />
-          <Route path="categorias" element={<CategoriasPage />} />
-          <Route path="productos" element={<ProductosPage />} />
-          {/* Agrega más rutas hijas aquí según crees tus páginas */}
+          <Route path="pacientes" element={<PacientesPage />} />
+          {/* Próximas rutas para el resto de tus módulos médicos */}
+          <Route path="triaje" element={<TriajePage />} />
+          {/* <Route path="historial" element={<HistorialPage />} /> */}
+          {/* <Route path="predictivo" element={<PredictivoPage />} /> */}
+          {/* <Route path="reportes" element={<ReportesPage />} /> */}
+          {/* <Route path="usuarios" element={<UsuariosPage />} /> */}
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

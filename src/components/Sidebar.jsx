@@ -1,9 +1,14 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, Tags, Package, Boxes, Layers, Truck, 
-  ShoppingCart, ClipboardList, Users, ShoppingBag, FileText, 
-  UserCheck, LogOut 
+  LayoutDashboard, 
+  Users, 
+  Activity, 
+  FileText, 
+  Cpu, 
+  BarChart3, 
+  ShieldCheck, 
+  LogOut 
 } from 'lucide-react';
 import logoImage from '../assets/logo.png';
 
@@ -11,26 +16,22 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Módulos actualizados para MedPredict
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { id: 'categorias', label: 'Categorías', path: '/dashboard/categorias', icon: Tags },
-    { id: 'productos', label: 'Productos', path: '/dashboard/productos', icon: Package },
-    { id: 'inventario', label: 'Inventario', path: '/dashboard/inventario', icon: Boxes },
-    { id: 'lotes', label: 'Gestión de Lotes', path: '/dashboard/lotes', icon: Layers },
-    { id: 'proveedores', label: 'Proveedores', path: '/dashboard/proveedores', icon: Truck },
-    { id: 'compras', label: 'Compras', path: '/dashboard/compras', icon: ShoppingCart },
-    { id: 'historial-compras', label: 'Historial Compras', path: '/dashboard/historial-compras', icon: ClipboardList },
-    { id: 'clientes', label: 'Clientes', path: '/dashboard/clientes', icon: Users },
-    { id: 'ventas', label: 'Ventas', path: '/dashboard/ventas', icon: ShoppingBag },
-    { id: 'historial-ventas', label: 'Historial Ventas', path: '/dashboard/historial-ventas', icon: FileText },
-    { id: 'usuarios', label: 'Usuarios', path: '/dashboard/usuarios', icon: UserCheck },
+    { id: 'pacientes', label: 'Pacientes', path: '/dashboard/pacientes', icon: Users },
+    { id: 'triaje', label: 'Triaje y Signos Vitales', path: '/dashboard/triaje', icon: Activity },
+    { id: 'historial', label: 'Historial Clínico', path: '/dashboard/historial', icon: FileText },
+    { id: 'predictivo', label: 'Análisis Predictivo (IA)', path: '/dashboard/predictivo', icon: Cpu },
+    { id: 'reportes', label: 'Reportes y Analítica', path: '/dashboard/reportes', icon: BarChart3 },
+    { id: 'usuarios', label: 'Gestión de Usuarios', path: '/dashboard/usuarios', icon: ShieldCheck },
   ];
 
   return (
     <aside className={`absolute inset-y-0 left-0 z-50 bg-[#56ccf2] flex flex-col transition-all duration-300 ease-in-out lg:relative overflow-hidden ${sidebarOpen ? 'w-64 shadow-xl lg:shadow-none' : 'w-0 -translate-x-full lg:translate-x-0'}`}>
       <div className="w-64 flex flex-col h-full">
         <div className="flex items-center justify-center h-20 px-3 bg-[#7FCFEC] border-b border-sky-300/60 shadow-xs shrink-0">
-            <img src={logoImage} alt="DrogIA Logo" className="w-[210px] h-auto max-h-16 object-contain drop-shadow-sm scale-200" />
+            <img src={logoImage} alt="MedPredict Logo" className="w-[210px] h-auto max-h-16 object-contain drop-shadow-sm scale-200" />
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1.5 custom-scrollbar">
