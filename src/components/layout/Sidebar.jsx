@@ -10,9 +10,9 @@ import {
   ShieldCheck, 
   LogOut 
 } from 'lucide-react';
-import logoImage from '../assets/logo.png';
-import { useAuth } from '../context/AuthContext';
-import { PERMISSIONS } from '../config/roles';
+import logoImage from "../../assets/logo.png";
+import { useAuth } from "../../context/AuthContext";
+import { PERMISSIONS } from '../../constants/roles';
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const navigate = useNavigate();

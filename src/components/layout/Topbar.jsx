@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AlignLeft, Bell, ChevronDown, LogOut, Clock } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../../context/AuthContext";
 
 export default function Topbar({ toggleSidebar }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);

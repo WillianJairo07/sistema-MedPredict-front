@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Search, Plus, FileText, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Tabla from '../components/Tabla';
-import ModalPaciente from '../components/ModalPaciente';
+import Tabla from '../components/ui/Tabla';
+import ModalPaciente from "../components/pacientes/ModalPaciente";
 import { usePacientes } from '../context/PacientesContext'; // <-- 1. Importamos el hook global
 
 export default function PacientesPage() {

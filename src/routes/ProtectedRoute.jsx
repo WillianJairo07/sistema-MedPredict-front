@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { PERMISSIONS } from '../config/roles';
+import { PERMISSIONS } from "../constants/roles";
 
 export const ProtectedRoute = ({ path }) => {
   const { user } = useAuth();

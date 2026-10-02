@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { initialPacientes } from '../data/mockData';
+import { initialPacientes } from "../mocks/mockData";
 
 const PacientesContext = createContext();
 
